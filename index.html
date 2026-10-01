@@ -1,0 +1,1432 @@
+<!DOCTYPE html><html lang="id"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>CEI-Links English Club</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<script src="https://cdn.jsdelivr.net/npm/react@18.3.1/umd/react.production.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/react-dom@18.3.1/umd/react-dom.production.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/prop-types@15.8.1/prop-types.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/react-is@18.3.1/umd/react-is.production.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/recharts@2.12.7/umd/Recharts.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/lucide-react@0.383.0/dist/umd/lucide-react.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@babel/standalone@7.24.7/babel.min.js"></script>
+<style>body{margin:0}</style>
+<script>
+window.safe=function(o){return new Proxy(o||{},{get:function(t,k){return t[k]||function(){return null}}})};
+function showErr(m){var d=document.createElement("pre");d.style.cssText="position:fixed;top:0;left:0;right:0;z-index:99999;background:#fee2e2;color:#991b1b;padding:12px;margin:0;font:12px/1.4 monospace;white-space:pre-wrap";d.textContent="ERROR: "+m;document.body&&document.body.appendChild(d)}
+window.addEventListener("error",function(e){if(e.target&&e.target.tagName==="SCRIPT"&&e.target.src){showErr("Gagal memuat script: "+e.target.src)}else{showErr((e.message||e)+" ("+(e.lineno||"?")+":"+(e.colno||"?")+")")}},true);
+window.addEventListener("unhandledrejection",function(e){showErr(String(e.reason&&e.reason.message||e.reason))});
+</script></head><body><div id="root" style="padding:24px;font:16px system-ui">Memuat CEI-Links...</div>
+<script type="text/babel" data-presets="react">
+const SUPA_URL = "https://lednfpzqwwqevvasmacd.supabase.co", SUPA_KEY = "sb_publishable_cXZP7P8IfPNrMx-NwIR34Q_MGiGLwoo";
+const { useState, useEffect, useMemo } = React;
+const { BookOpen, Lock, CheckCircle2, Home, BarChart3, Trophy, ArrowRight, ArrowLeft, LogOut, Plane, GraduationCap, Sparkles, Clock, Award, AlertCircle, Download, ShieldCheck, RefreshCw, Copy } = safe(window.lucideReact);
+const { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer, LineChart, Line } = safe(window.Recharts);
+async function rpc(fn, args) {
+  const r = await fetch(SUPA_URL + "/rest/v1/rpc/" + fn, {
+    method: "POST",
+    headers: { apikey: SUPA_KEY, ...(SUPA_KEY.startsWith("eyJ") ? { Authorization: "Bearer " + SUPA_KEY } : {}), "Content-Type": "application/json" },
+    body: JSON.stringify(args || {}),
+  });
+  const t = await r.text();
+  if (!r.ok) { let m = t; try { m = JSON.parse(t).message; } catch (e) {} throw new Error(m); }
+  return t ? JSON.parse(t) : null;
+}
+
+
+/* ============================== FONTS ============================== */
+const FontStyles = () => (
+  <style>{`
+    @import url('https://fonts.googleapis.com/css2?family=Fraunces:ital,wght@0,500;0,600;0,700;1,500&family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@500;700&display=swap');
+    .f-display { font-family: 'Fraunces', serif; }
+    .f-body { font-family: 'Inter', sans-serif; }
+    .f-mono { font-family: 'JetBrains Mono', monospace; }
+    .ticket-hole {
+      position: absolute; width: 22px; height: 22px; border-radius: 9999px;
+      background: var(--hole-bg, #FFFBEB); top: 50%; transform: translateY(-50%);
+    }
+    @keyframes stampIn {
+      0% { transform: scale(2.2) rotate(-14deg); opacity: 0; }
+      60% { transform: scale(0.92) rotate(-8deg); opacity: 1; }
+      100% { transform: scale(1) rotate(-8deg); opacity: 1; }
+    }
+    .stamp-anim { animation: stampIn 0.5s cubic-bezier(.2,.9,.3,1.2) both; }
+    @keyframes riseIn {
+      0% { opacity: 0; transform: translateY(10px); }
+      100% { opacity: 1; transform: translateY(0); }
+    }
+    .rise-in { animation: riseIn 0.45s ease both; }
+
+    #print-area { display: none; }
+    @media print {
+      body * { visibility: hidden; }
+      #print-area, #print-area * { visibility: visible; }
+      #print-area { display: block; position: absolute; top: 0; left: 0; width: 100%; padding: 24px; }
+      .print-page-break { page-break-before: always; }
+    }
+  `}</style>
+);
+
+/* ============================== CONTENT DATA ============================== */
+const WEEKS = [
+  {
+    id: 1,
+    topic: "Environment & Ethical Living",
+    subtopic: "Production & Consumer",
+    tenseLabel: "Simple Present & Present Continuous",
+    pretest: {
+      passages: [
+        {
+          title: "Inside GreenLeaf Factory",
+          text: "GreenLeaf Factory produces reusable food containers from recycled plastic. Every morning, workers sort the plastic waste that local communities collect and drop off at the gate. The machines melt the plastic and shape it into containers, and quality inspectors check each batch before it leaves the factory. Right now, the factory is testing a new type of plant-based coating that replaces the old chemical layer. Managers are also meeting with a supplier who wants to sell more affordable recycled materials. The factory owner believes that ethical production does not have to cost more, and she often reminds her staff that small daily choices add up to a big impact on the environment.",
+          questions: [
+            { q: "What does GreenLeaf Factory produce?", options: ["Reusable food containers from recycled plastic", "Fresh vegetables", "Plastic bottles for water", "Leather bags"], correct: 0 },
+            { q: "Which sentence from the passage is in the Present Continuous tense?", options: ["\"The factory owner believes...\"", "\"Managers are also meeting with a supplier...\"", "\"Workers sort the plastic waste...\"", "\"The machines melt the plastic...\""], correct: 1 },
+            { q: "According to the passage, what is happening right now at the factory?", options: ["They are closing the factory", "They are testing a new plant-based coating", "They are firing workers", "They are moving to another city"], correct: 1 },
+            { q: "Choose the correct form: \"Every day, quality inspectors ______ each batch before it leaves the factory.\"", options: ["are checking", "checks", "check", "checked"], correct: 2 },
+          ],
+        },
+        {
+          title: "A Conscious Shopper",
+          text: "Rina always checks the label before she buys anything. She avoids products with excessive plastic packaging and prefers brands that use fair-trade ingredients. This week, she is trying a new habit: bringing her own containers to the market to reduce single-use plastic. Her friends usually tease her for taking so long in the supermarket, but Rina does not mind. She believes that consumers have power, and every purchase is a small vote for the kind of world she wants to live in.",
+          questions: [
+            { q: "What is Rina trying this week?", options: ["A new diet", "Bringing her own containers to the market", "Buying more plastic", "Selling homemade snacks"], correct: 1 },
+            { q: "Which phrase shows an action in progress (Present Continuous)?", options: ["\"she is trying a new habit\"", "\"Rina always checks the label\"", "\"she believes that consumers have power\"", "\"Her friends usually tease her\""], correct: 0 },
+            { q: "Why does Rina check labels before buying?", options: ["To find the cheapest option", "To avoid excessive plastic packaging and support fair trade", "To collect stickers", "Because it's required by law"], correct: 1 },
+          ],
+        },
+      ],
+    },
+    posttest: {
+      passages: [
+        {
+          title: "Café Bumi's New Habit",
+          text: "Café Bumi serves coffee and light meals in the middle of the city. The owners source their coffee beans directly from small farmers, and they pay a fair price above the market rate. Every table uses reusable cups and metal straws instead of plastic ones. This month, the café is running a new campaign: customers who bring their own cups get a discount. The barista team is also composting coffee grounds instead of throwing them away, and they are teaching a workshop for other cafés interested in reducing waste. The owner says that small businesses can lead big changes when they act with intention.",
+          questions: [
+            { q: "What does Café Bumi source directly from small farmers?", options: ["Coffee beans", "Milk", "Sugar", "Furniture"], correct: 0 },
+            { q: "What campaign is the café running this month?", options: ["Free wifi", "Discount for customers who bring their own cups", "Live music nights", "Delivery service"], correct: 1 },
+            { q: "Which sentence is in Present Continuous?", options: ["\"Café Bumi serves coffee...\"", "\"The barista team is also composting coffee grounds...\"", "\"they pay a fair price\"", "\"The owner says...\""], correct: 1 },
+            { q: "Complete: \"Every table ______ reusable cups instead of plastic ones.\"", options: ["use", "uses", "is using", "used"], correct: 1 },
+          ],
+        },
+        {
+          title: "Budi's Grocery Routine",
+          text: "Budi shops at the traditional market every weekend because he wants to support local farmers. He compares prices, but he never buys more food than his family needs, since he hates wasting food. This week, he is experimenting with a plant-based menu to reduce his family's meat consumption. His neighbors sometimes ask him why he carries cloth bags everywhere, and he simply says that small habits matter.",
+          questions: [
+            { q: "Why does Budi shop at the traditional market?", options: ["To support local farmers", "Because it's closer to his house", "Because it's cheaper than online", "His wife told him to"], correct: 0 },
+            { q: "What is Budi experimenting with this week?", options: ["A plant-based menu", "A new job", "A new market", "A cooking class"], correct: 0 },
+            { q: "Which sentence uses Present Continuous?", options: ["\"he is experimenting with a plant-based menu\"", "\"He compares prices\"", "\"he never buys more food\"", "\"he simply says\""], correct: 0 },
+          ],
+        },
+      ],
+    },
+  },
+  {
+    id: 2,
+    topic: "Technology, Science & Ethics",
+    subtopic: "Ethics of AI (Hardware & Software)",
+    tenseLabel: "Present Perfect & Present Perfect Continuous",
+    pretest: {
+      passages: [
+        {
+          title: "The Ethics Team at NovaTech",
+          text: "NovaTech has developed a new AI assistant for hospitals. Over the past year, the ethics team has reviewed thousands of cases to check for bias in the software. They have already removed several algorithms that gave unfair recommendations to certain patient groups. The engineers have been working closely with doctors to understand how the AI affects real decisions. Recently, the company has published its first transparency report, explaining how the hardware collects and stores patient data. Critics have been asking for stricter regulations, and NovaTech admits that trust is something the industry has not fully earned yet.",
+          questions: [
+            { q: "What has NovaTech developed?", options: ["A new AI assistant for hospitals", "A new smartphone", "A car battery", "A cooking app"], correct: 0 },
+            { q: "Which sentence uses Present Perfect Continuous?", options: ["\"NovaTech has developed a new AI assistant...\"", "\"The engineers have been working closely with doctors...\"", "\"They have already removed several algorithms...\"", "\"the company has published its first transparency report\""], correct: 1 },
+            { q: "What has the ethics team done over the past year?", options: ["Reviewed thousands of cases for bias", "Built a new office", "Hired more doctors", "Sold the company"], correct: 0 },
+            { q: "Complete: \"Critics ______ for stricter regulations recently.\"", options: ["has asked", "have been asking", "are asking", "asked"], correct: 1 },
+          ],
+        },
+        {
+          title: "One Engineer's Reflection",
+          text: "Maya has worked in AI hardware design for six years. She has always cared about how technology affects people's privacy. Lately, she has been questioning whether her company's facial recognition chips are used responsibly by clients. She has raised her concerns twice in meetings, but management has not given her a clear answer yet. Maya has decided to keep pushing for an internal ethics review before the next product launch.",
+          questions: [
+            { q: "How long has Maya worked in AI hardware design?", options: ["Six years", "Six months", "Sixteen years", "She just started"], correct: 0 },
+            { q: "What has Maya been questioning lately?", options: ["Whether facial recognition chips are used responsibly", "Her salary", "Her job title", "The company's location"], correct: 0 },
+            { q: "Which shows an unfinished action continuing to now?", options: ["\"she has been questioning whether her company's facial recognition chips are used responsibly\"", "\"She has raised her concerns twice\"", "\"management has not given her a clear answer\"", "\"Maya has decided to keep pushing\""], correct: 0 },
+          ],
+        },
+      ],
+    },
+    posttest: {
+      passages: [
+        {
+          title: "BrightMind's Software Audit",
+          text: "BrightMind has released three AI-powered learning apps for schools. This semester, the company has been auditing its algorithms to ensure they don't favor students from wealthier backgrounds. The developers have found two features that unintentionally disadvantaged students with slower internet connections. They have already fixed one of the problems, and they have been testing the second fix with volunteer schools for two weeks. Parents have started asking harder questions about how student data is stored, and BrightMind has promised a full report by next month.",
+          questions: [
+            { q: "What has BrightMind released?", options: ["Three AI-powered learning apps for schools", "A new laptop", "A gaming console", "A social media app"], correct: 0 },
+            { q: "What have the developers found?", options: ["Two features that disadvantaged students with slow internet", "A new office building", "A cheaper supplier", "A software virus"], correct: 0 },
+            { q: "Which sentence uses Present Perfect Continuous?", options: ["\"the company has been auditing its algorithms\"", "\"They have already fixed one of the problems\"", "\"BrightMind has promised a full report\"", "\"Parents have started asking harder questions\""], correct: 0 },
+            { q: "Complete: \"They ______ the second fix with volunteer schools for two weeks.\"", options: ["have tested", "have been testing", "are testing", "tested"], correct: 1 },
+          ],
+        },
+        {
+          title: "Interview with a Hardware Ethicist",
+          text: "Dr. Aditya has studied the ethics of AI hardware for over a decade. Recently, he has been advising chip manufacturers on how to reduce energy waste responsibly. He has already published two papers about the environmental cost of training large AI models. Journalists have interviewed him several times this year, and he has consistently argued that companies have not paid enough attention to the hidden costs of their hardware.",
+          questions: [
+            { q: "What has Dr. Aditya been advising chip manufacturers on?", options: ["How to reduce energy waste responsibly", "How to raise prices", "How to hire more staff", "How to design logos"], correct: 0 },
+            { q: "How many papers has he already published on this topic?", options: ["Two", "Zero", "Ten", "One"], correct: 0 },
+            { q: "Which phrase indicates a repeated action over time?", options: ["\"Journalists have interviewed him several times this year\"", "\"he has been advising chip manufacturers\"", "\"he has already published two papers\"", "\"companies have not paid enough attention\""], correct: 0 },
+          ],
+        },
+      ],
+    },
+  },
+  {
+    id: 3,
+    topic: "Work, Wealth & the Economy",
+    subtopic: "Career, Economy & Policy",
+    tenseLabel: "Simple Past & Past Continuous",
+    pretest: {
+      passages: [
+        {
+          title: "Dewi's Career Turn",
+          text: "Dewi worked as an accountant for eight years before she decided to change careers. While she was preparing tax reports one evening, she suddenly realized she wanted to work with people instead of numbers. She quit her job the next month and enrolled in a coaching certification program. While she was studying, she also volunteered at a community center to gain experience. Six months later, she opened her own career-coaching practice. Her former colleagues were surprised, but her clients were grateful for the change.",
+          questions: [
+            { q: "What was Dewi's job before she changed careers?", options: ["Accountant", "Teacher", "Doctor", "Chef"], correct: 0 },
+            { q: "What was she doing when she realized she wanted a career change?", options: ["Preparing tax reports", "Sleeping", "Traveling", "Cooking dinner"], correct: 0 },
+            { q: "Which sentence uses Past Continuous?", options: ["\"Dewi worked as an accountant for eight years\"", "\"While she was studying, she also volunteered...\"", "\"She quit her job the next month\"", "\"Six months later, she opened her own practice\""], correct: 1 },
+            { q: "Complete: \"While she ______ tax reports, she realized she wanted a new career.\"", options: ["prepared", "was preparing", "prepares", "has prepared"], correct: 1 },
+          ],
+        },
+        {
+          title: "A Factory Strike",
+          text: "Last year, workers at a textile factory went on strike because their wages had stayed the same for three years while prices increased. While the strike was happening, the company's stock price dropped sharply. Negotiators met every day for two weeks until both sides finally agreed on a new wage policy. Many economists were watching the case closely because it became a symbol of a wider labor movement.",
+          questions: [
+            { q: "Why did the workers go on strike?", options: ["Their wages had stayed the same while prices increased", "They wanted a holiday", "The factory was closing", "They wanted new uniforms"], correct: 0 },
+            { q: "What was happening to the company's stock price during the strike?", options: ["It dropped sharply", "It doubled", "It stayed the same", "It disappeared"], correct: 0 },
+            { q: "Which sentence uses Past Continuous?", options: ["\"workers at a textile factory went on strike\"", "\"While the strike was happening, the company's stock price dropped\"", "\"Negotiators met every day\"", "\"both sides finally agreed\""], correct: 1 },
+          ],
+        },
+      ],
+    },
+    posttest: {
+      passages: [
+        {
+          title: "Andi's Career Risk",
+          text: "Andi worked in a stable government job for ten years. While he was attending a friend's business seminar, he became interested in starting his own company. He resigned the following week and used his savings to launch a small logistics startup. While he was building his client base, he faced serious cash flow problems. His family worried about the risk, but Andi believed the economy was changing fast enough to reward people who adapted early.",
+          questions: [
+            { q: "What kind of job did Andi have for ten years?", options: ["A government job", "A factory job", "A teaching job", "A farming job"], correct: 0 },
+            { q: "What was he doing when he became interested in starting a business?", options: ["Attending a friend's business seminar", "Watching television", "Traveling abroad", "Reading a novel"], correct: 0 },
+            { q: "Which sentence uses Past Continuous?", options: ["\"Andi worked in a stable government job\"", "\"While he was building his client base, he faced serious cash flow problems\"", "\"He resigned the following week\"", "\"His family worried about the risk\""], correct: 1 },
+            { q: "Complete: \"While he ______ his client base, he faced cash flow problems.\"", options: ["built", "was building", "builds", "has built"], correct: 1 },
+          ],
+        },
+        {
+          title: "The Rise and Fall of a Local Market",
+          text: "Ten years ago, a local traditional market was thriving because it offered lower prices than supermarkets. While online shopping was becoming popular, many sellers refused to adapt their business model. Sales dropped every year until the local government stepped in with a renovation program. Economists studied the case because it showed how quickly consumer habits could shift.",
+          questions: [
+            { q: "Why was the local market thriving ten years ago?", options: ["It offered lower prices than supermarkets", "It had free parking", "It was the only market in town", "It sold imported goods"], correct: 0 },
+            { q: "What was happening while online shopping was becoming popular?", options: ["Many sellers refused to adapt", "Sellers closed the market immediately", "Prices tripled", "The market moved online"], correct: 0 },
+            { q: "Which sentence uses Past Continuous?", options: ["\"a local traditional market was thriving\"", "\"While online shopping was becoming popular, many sellers refused to adapt\"", "\"Sales dropped every year\"", "\"the local government stepped in\""], correct: 1 },
+          ],
+        },
+      ],
+    },
+  },
+  {
+    id: 4,
+    topic: "Health, Education & Human Development",
+    subtopic: "Self-Development & Education",
+    tenseLabel: "Past Perfect & Past Perfect Continuous",
+    pretest: {
+      passages: [
+        {
+          title: "Sari's Turning Point",
+          text: "By the time Sari turned twenty-five, she had already failed the national exam twice. She had been studying alone every night for months, but she still struggled with the material. After her second failure, she finally joined a study group that had helped hundreds of other students before. Within a year, she passed the exam with one of the highest scores in her city. She later said that she had never truly understood the subject until she started learning with others.",
+          questions: [
+            { q: "How many times had Sari failed the exam before she joined the study group?", options: ["Twice", "Once", "Three times", "Never"], correct: 0 },
+            { q: "What had she been doing every night for months?", options: ["Studying alone", "Working two jobs", "Traveling", "Sleeping early"], correct: 0 },
+            { q: "Which sentence uses Past Perfect Continuous?", options: ["\"she had already failed the national exam twice\"", "\"She had been studying alone every night for months\"", "\"she finally joined a study group\"", "\"she passed the exam\""], correct: 1 },
+            { q: "Complete: \"She ______ the subject until she started learning with others.\"", options: ["never understood", "had never understood", "never understands", "has never understood"], correct: 1 },
+          ],
+        },
+        {
+          title: "A School's New Program",
+          text: "Before the pandemic began, the school had never offered any online classes. Teachers had been resisting the idea of digital learning for years because they preferred traditional methods. When classrooms suddenly closed, the staff realized they had underestimated how flexible online tools could be. Students who had struggled with attendance before actually improved once classes moved online.",
+          questions: [
+            { q: "What had the school never offered before the pandemic?", options: ["Online classes", "Sports programs", "Music lessons", "Field trips"], correct: 0 },
+            { q: "What had teachers been doing for years regarding digital learning?", options: ["Resisting the idea", "Promoting it strongly", "Ignoring their students", "Teaching it exclusively"], correct: 0 },
+            { q: "Which sentence uses Past Perfect Continuous?", options: ["\"the school had never offered any online classes\"", "\"Teachers had been resisting the idea of digital learning for years\"", "\"the staff realized they had underestimated...\"", "\"Students...actually improved\""], correct: 1 },
+          ],
+        },
+      ],
+    },
+    posttest: {
+      passages: [
+        {
+          title: "Rian's Second Chance",
+          text: "By the time Rian was accepted into university, he had already dropped out of two different courses. He had been working part-time jobs to support his family instead of focusing on school. After a mentor encouraged him to apply for a scholarship, he discovered a passion for engineering that he had never expected to find. By the time he graduated, he had become one of the top students in his department.",
+          questions: [
+            { q: "How many courses had Rian dropped out of before university?", options: ["Two", "None", "Three", "One"], correct: 0 },
+            { q: "What had he been doing instead of focusing on school?", options: ["Working part-time jobs", "Traveling abroad", "Playing sports professionally", "Running a business"], correct: 0 },
+            { q: "Which sentence uses Past Perfect Continuous?", options: ["\"he had already dropped out of two different courses\"", "\"He had been working part-time jobs to support his family\"", "\"he discovered a passion for engineering\"", "\"he had become one of the top students\""], correct: 1 },
+            { q: "Complete: \"By the time he graduated, he ______ one of the top students in his department.\"", options: ["become", "became", "had become", "has become"], correct: 2 },
+          ],
+        },
+        {
+          title: "An Education Policy Review",
+          text: "Before the new curriculum was introduced, the ministry had been collecting feedback from teachers for two years. Officials realized that many schools had never received proper training for the previous curriculum. Once the new plan launched, schools that had already invested in teacher training adapted much faster than those that had not.",
+          questions: [
+            { q: "What had the ministry been doing for two years before the new curriculum?", options: ["Collecting feedback from teachers", "Building new schools", "Reducing the education budget", "Closing rural schools"], correct: 0 },
+            { q: "What had many schools never received?", options: ["Proper training for the previous curriculum", "New textbooks", "Internet access", "A new principal"], correct: 0 },
+            { q: "Which sentence uses Past Perfect Continuous?", options: ["\"the ministry had been collecting feedback from teachers for two years\"", "\"many schools had never received proper training\"", "\"schools...adapted much faster\"", "\"Once the new plan launched\""], correct: 0 },
+          ],
+        },
+      ],
+    },
+  },
+  {
+    id: 5,
+    topic: "Media, Culture & Identity",
+    subtopic: "Issues on Social Media",
+    tenseLabel: "Simple Future & Conditional",
+    pretest: {
+      passages: [
+        {
+          title: "The Future of Online Identity",
+          text: "Experts predict that social media platforms will introduce stricter identity verification within the next few years. If platforms require real identities, online harassment will likely decrease, but some users worry that anonymity protects vulnerable groups. If lawmakers pass new digital privacy regulations, companies will have to change how they collect personal data. Many young users say that if they had more control over their data, they would trust social media more. Analysts believe that unless platforms rebuild public trust, more users will leave for smaller, private communities.",
+          questions: [
+            { q: "What do experts predict platforms will introduce?", options: ["Stricter identity verification", "Free premium features", "More advertisements", "Shorter videos"], correct: 0 },
+            { q: "What will likely happen if platforms require real identities?", options: ["Online harassment will likely decrease", "Users will disappear immediately", "Companies will close down", "Nothing will change"], correct: 0 },
+            { q: "Which sentence is a conditional sentence?", options: ["\"Experts predict that social media platforms will introduce stricter identity verification\"", "\"If lawmakers pass new digital privacy regulations, companies will have to change how they collect personal data.\"", "\"Analysts believe that...\"", "\"more users will leave\""], correct: 1 },
+            { q: "Complete: \"Unless platforms rebuild public trust, more users ______ for smaller communities.\"", options: ["leave", "will leave", "left", "are leaving"], correct: 1 },
+          ],
+        },
+        {
+          title: "A Content Creator's Dilemma",
+          text: "Naya will launch a new podcast about mental health next month. If the podcast gains enough listeners, she will quit her day job to focus on content creation full time. However, if she loses her privacy because of sudden fame, she says she will take a break from social media. Her manager believes that if she stays consistent, the podcast will succeed within a year.",
+          questions: [
+            { q: "What will Naya launch next month?", options: ["A new podcast about mental health", "A cooking show", "A fashion brand", "A travel vlog"], correct: 0 },
+            { q: "What will Naya do if the podcast gains enough listeners?", options: ["Quit her day job to focus on content creation", "Stop making podcasts", "Move to another country", "Hire a lawyer"], correct: 0 },
+            { q: "Which sentence is conditional?", options: ["\"Naya will launch a new podcast about mental health next month.\"", "\"If she loses her privacy because of sudden fame, she says she will take a break from social media.\"", "\"Her manager believes...\"", "\"the podcast will succeed within a year\""], correct: 1 },
+          ],
+        },
+      ],
+    },
+    posttest: {
+      passages: [
+        {
+          title: "Predicting the Next Big Platform Shift",
+          text: "Analysts say that short-video platforms will keep growing unless users become tired of constant content. If a platform fails to protect younger users from harmful content, regulators will likely impose heavy fines. Some parents believe that if schools taught digital literacy earlier, teenagers would handle social media pressure better. Meanwhile, many creators will move to platforms that pay them fairly if the current ones do not improve their policies.",
+          questions: [
+            { q: "What will short-video platforms do, according to analysts, unless users get tired?", options: ["Keep growing", "Shut down", "Merge together", "Ban all creators"], correct: 0 },
+            { q: "What will happen if a platform fails to protect younger users?", options: ["Regulators will likely impose heavy fines", "Nothing at all", "The platform will get an award", "Users will stay loyal forever"], correct: 0 },
+            { q: "Which sentence is conditional?", options: ["\"Analysts say that short-video platforms will keep growing\"", "\"If a platform fails to protect younger users from harmful content, regulators will likely impose heavy fines.\"", "\"many creators will move to platforms that pay them fairly\"", "None of the above"], correct: 1 },
+            { q: "Complete: \"If schools taught digital literacy earlier, teenagers ______ social media pressure better.\"", options: ["will handle", "would handle", "handle", "are handling"], correct: 1 },
+          ],
+        },
+        {
+          title: "An Influencer's Decision",
+          text: "Deka will collaborate with a major brand next week. If the brand asks him to promote a product he doesn't believe in, he says he will decline the offer, even if it costs him money. His followers believe that if he keeps being honest, his audience will keep growing steadily.",
+          questions: [
+            { q: "What will Deka do next week?", options: ["Collaborate with a major brand", "Retire from social media", "Launch his own brand", "Move abroad"], correct: 0 },
+            { q: "What will Deka do if he doesn't believe in a product?", options: ["Decline the offer", "Promote it anyway", "Ask for more money", "Ignore the brand"], correct: 0 },
+            { q: "Which sentence is conditional?", options: ["\"Deka will collaborate with a major brand next week.\"", "\"If he keeps being honest, his audience will keep growing steadily.\"", "\"His followers believe that...\"", "None of the above"], correct: 1 },
+          ],
+        },
+      ],
+    },
+  },
+  {
+    id: 6,
+    topic: "Urbanization, Mobility & Global Communities",
+    subtopic: "Travel, Migration & Tourism's Impact",
+    tenseLabel: "Wrap Up — Mixed Tenses Review",
+    pretest: {
+      passages: [
+        {
+          title: "A City in Transition",
+          text: "Jakarta has grown rapidly over the past decade, and the city is currently building new mass transit lines to reduce traffic. Twenty years ago, most residents traveled by car or motorbike, and public transport was limited. While the city was expanding, many rural migrants moved in search of better jobs. By the time the new train line opens next year, planners will have been studying its impact on housing prices for over three years. If the transit system succeeds, other cities will likely follow the same model.",
+          questions: [
+            { q: "What is Jakarta currently doing? (Present Continuous)", options: ["Building new mass transit lines", "Closing old markets", "Reducing its population", "Banning motorbikes"], correct: 0 },
+            { q: "What were most residents doing twenty years ago? (Simple Past)", options: ["Traveling by car or motorbike", "Using trains", "Walking everywhere", "Riding bicycles only"], correct: 0 },
+            { q: "Which sentence describes an action continuing up to a point in the future?", options: ["\"the city is currently building new mass transit lines\"", "\"planners will have been studying its impact on housing prices for over three years\"", "\"many rural migrants moved in search of better jobs\"", "\"If the transit system succeeds, other cities will likely follow\""], correct: 1 },
+            { q: "Which sentence is conditional?", options: ["\"Jakarta has grown rapidly over the past decade\"", "\"If the transit system succeeds, other cities will likely follow the same model.\"", "\"the city is currently building new mass transit lines\"", "\"many rural migrants moved in search of better jobs\""], correct: 1 },
+          ],
+        },
+        {
+          title: "Why People Move",
+          text: "People migrate for many reasons: some are searching for jobs, while others are escaping conflict or seeking a better education for their children. Maria had been living in her hometown her whole life before she decided to move abroad for work. She is currently adjusting to a new culture and learning a new language. If more countries create fair migration policies, experts believe global mobility will benefit both origin and destination communities.",
+          questions: [
+            { q: "What is Maria currently doing?", options: ["Adjusting to a new culture and learning a new language", "Returning home permanently", "Studying for an exam", "Opening a business"], correct: 0 },
+            { q: "What had Maria been doing before she decided to move abroad?", options: ["Living in her hometown her whole life", "Working abroad already", "Traveling constantly", "Studying overseas"], correct: 0 },
+            { q: "Which sentence is conditional?", options: ["\"People migrate for many reasons\"", "\"If more countries create fair migration policies, experts believe global mobility will benefit both...\"", "\"Maria had been living in her hometown\"", "\"She is currently adjusting to a new culture\""], correct: 1 },
+          ],
+        },
+      ],
+    },
+    posttest: {
+      passages: [
+        {
+          title: "Bali's Tourism Balance",
+          text: "Bali has welcomed millions of tourists over the past twenty years, and the island is currently debating how to manage overtourism. Ten years ago, many coastal villages depended entirely on fishing, but tourism was changing local economies quickly. While the industry was growing, environmental damage was increasing at nearby beaches too. By the time new regulations take effect next year, officials will have been studying sustainable tourism models for over five years. If the government limits visitor numbers, local businesses will need to adapt quickly.",
+          questions: [
+            { q: "What is Bali currently debating? (Present Continuous)", options: ["How to manage overtourism", "Whether to close the airport", "How to build more hotels", "Whether to ban fishing"], correct: 0 },
+            { q: "What were coastal villages doing ten years ago? (Past)", options: ["Depending entirely on fishing", "Running large hotels", "Exporting furniture", "Working in factories"], correct: 0 },
+            { q: "Which sentence describes an ongoing action continuing up to a future point?", options: ["\"Bali has welcomed millions of tourists\"", "\"officials will have been studying sustainable tourism models for over five years\"", "\"tourism was changing local economies quickly\"", "\"If the government limits visitor numbers...\""], correct: 1 },
+            { q: "Which sentence is conditional?", options: ["\"Bali has welcomed millions of tourists over the past twenty years\"", "\"If the government limits visitor numbers, local businesses will need to adapt quickly.\"", "\"the island is currently debating how to manage overtourism\"", "\"environmental damage was increasing\""], correct: 1 },
+          ],
+        },
+        {
+          title: "A Migrant Worker's Journey",
+          text: "Joko had been farming in his village for fifteen years before a long drought destroyed his harvest. He decided to move to the city, where he is currently working in construction and sending money home every month. He says that if the government had invested more in rural irrigation, he might never have left his hometown. Still, he believes that if he saves enough money, he will start a small business back home someday.",
+          questions: [
+            { q: "What is Joko currently doing in the city?", options: ["Working in construction and sending money home", "Studying at university", "Running a restaurant", "Looking for a wife"], correct: 0 },
+            { q: "What had Joko been doing for fifteen years before the drought?", options: ["Farming in his village", "Working in a factory", "Living in the city", "Studying abroad"], correct: 0 },
+            { q: "Which sentence is conditional?", options: ["\"Joko had been farming in his village for fifteen years\"", "\"if he saves enough money, he will start a small business back home someday\"", "\"He decided to move to the city\"", "\"he is currently working in construction\""], correct: 1 },
+          ],
+        },
+      ],
+    },
+  },
+];
+
+const TOTAL_Q = (test) => test.passages.reduce((s, p) => s + p.questions.length, 0);
+
+/* ============================== STORAGE HELPERS ============================== */
+const sanitizeNim = (nim) => nim.trim().replace(/[\s\/\\'"]/g, "");
+
+async function fetchAllStudents() {
+  try { return (await rpc("get_leaderboard")) || []; } catch (e) { return []; }
+}
+
+function emptyScores() {
+  const s = {};
+  WEEKS.forEach((w) => (s[w.id] = { pretest: null, posttest: null }));
+  return s;
+}
+
+const PrintablePassageBlock = ({ passage, startNumber }) => (
+  <div style={{ marginBottom: 18, breakInside: "avoid" }}>
+    <p style={{ fontWeight: 700, fontSize: 13, marginBottom: 4 }}>{passage.title}</p>
+    <p style={{ fontSize: 12, lineHeight: 1.6, marginBottom: 10, textAlign: "justify" }}>{passage.text}</p>
+    {passage.questions.map((q, qi) => (
+      <div key={qi} style={{ marginBottom: 8 }}>
+        <p style={{ fontSize: 12.5, fontWeight: 600, marginBottom: 3 }}>
+          {startNumber + qi}. {q.q}
+        </p>
+        {q.options.map((opt, oi) => (
+          <p key={oi} style={{ fontSize: 12, margin: "1px 0 1px 16px" }}>
+            {String.fromCharCode(65 + oi)}. {opt}
+          </p>
+        ))}
+      </div>
+    ))}
+  </div>
+);
+
+const PrintableTestSection = ({ label, test }) => {
+  let n = 1;
+  return (
+    <div style={{ marginBottom: 22 }}>
+      <div style={{ background: "#1e293b", color: "#fef3c7", padding: "6px 10px", fontWeight: 700, fontSize: 13, marginBottom: 10 }}>
+        {label}
+      </div>
+      {test.passages.map((p, pi) => {
+        const block = <PrintablePassageBlock key={pi} passage={p} startNumber={n} />;
+        n += p.questions.length;
+        return block;
+      })}
+    </div>
+  );
+};
+
+const PrintableWeek = ({ week }) => {
+  if (!week) return null;
+  return (
+    <div id="print-area" style={{ fontFamily: "Arial, sans-serif", color: "#111" }}>
+      <div style={{ borderBottom: "2px solid #111", paddingBottom: 8, marginBottom: 16 }}>
+        <p style={{ fontSize: 11, fontWeight: 700, letterSpacing: 1, textTransform: "uppercase", margin: 0 }}>
+          CEI-Links English Club — Universitas Negeri Malang
+        </p>
+        <p style={{ fontSize: 18, fontWeight: 700, margin: "4px 0 0" }}>
+          Week {String(week.id).padStart(2, "0")} — {week.topic}
+        </p>
+        <p style={{ fontSize: 12, margin: "2px 0 0" }}>
+          {week.subtopic} · Fokus tenses: {week.tenseLabel}
+        </p>
+        <div style={{ display: "flex", gap: 40, marginTop: 10, fontSize: 12 }}>
+          <span>Nama: ______________________________</span>
+          <span>NIM: ________________________</span>
+        </div>
+      </div>
+      <PrintableTestSection label="PRETEST" test={week.pretest} />
+      <div className="print-page-break" />
+      <PrintableTestSection label="POSTTEST" test={week.posttest} />
+      <p style={{ fontSize: 10, color: "#666", marginTop: 10 }}>
+        Lembar soal ini dihasilkan dari CEI-Links English Club — Universitas Negeri Malang.
+      </p>
+    </div>
+  );
+};
+
+
+/* ============================== SMALL COMPONENTS ============================== */
+const TicketCard = ({ children, style = {}, className = "" }) => (
+  <div
+    className={`relative rounded-2xl border-2 border-dashed border-amber-300 bg-white shadow-sm ${className}`}
+    style={style}
+  >
+    <div className="ticket-hole" style={{ left: "-11px" }} />
+    <div className="ticket-hole" style={{ right: "-11px" }} />
+    {children}
+  </div>
+);
+
+const Stamp = ({ label, ok }) => (
+  <div
+    className={`stamp-anim inline-flex items-center gap-1 rounded-full border-2 px-2.5 py-1 text-xs font-bold f-mono uppercase tracking-wide ${
+      ok ? "border-emerald-600 text-emerald-700 bg-emerald-50" : "border-slate-300 text-slate-400 bg-slate-50"
+    }`}
+  >
+    {ok ? <CheckCircle2 size={13} /> : <Clock size={13} />}
+    {label}
+  </div>
+);
+
+const NavBar = ({ view, setView, student, onLogout }) => {
+  const items = [
+    { id: "menu", label: "Beranda", icon: Home },
+    { id: "dashboard", label: "Dashboard", icon: BarChart3 },
+    { id: "leaderboard", label: "Leaderboard", icon: Trophy },
+    { id: "admin", label: "Admin", icon: ShieldCheck },
+  ];
+  return (
+    <div className="sticky top-0 z-30 border-b border-slate-800 bg-slate-900/95 backdrop-blur f-body">
+      <div className="mx-auto flex max-w-5xl items-center justify-between px-4 py-3">
+        <div className="flex items-center gap-2">
+          <Plane className="text-amber-400" size={20} />
+          <span className="f-display text-sm font-semibold text-amber-50 sm:text-base">CEI-Links English Club</span>
+        </div>
+        <div className="flex items-center gap-1 sm:gap-2">
+          {items.map((it) => {
+            const Icon = it.icon;
+            const active = view === it.id;
+            return (
+              <button
+                key={it.id}
+                onClick={() => setView(it.id)}
+                className={`flex items-center gap-1.5 rounded-full px-2.5 py-1.5 text-xs font-semibold transition sm:px-3 sm:text-sm ${
+                  active ? "bg-amber-400 text-slate-900" : "text-slate-300 hover:bg-slate-800"
+                }`}
+              >
+                <Icon size={14} />
+                <span className="hidden sm:inline">{it.label}</span>
+              </button>
+            );
+          })}
+          {student && (
+            <button
+              onClick={onLogout}
+              title="Ganti akun"
+              className="ml-1 flex items-center gap-1.5 rounded-full border border-slate-700 px-2.5 py-1.5 text-xs font-semibold text-slate-300 hover:bg-slate-800 sm:px-3"
+            >
+              <LogOut size={14} />
+              <span className="hidden sm:inline">Keluar</span>
+            </button>
+          )}
+        </div>
+      </div>
+    </div>
+  );
+};
+
+/* ============================== SCREENS ============================== */
+function LandingScreen({ onStart, onLeaderboard, onDownload }) {
+  return (
+    <div className="f-body min-h-screen bg-amber-50">
+      <div className="relative overflow-hidden bg-slate-900 text-amber-50">
+        <div className="mx-auto max-w-5xl px-6 py-20 sm:py-28">
+          <div className="rise-in flex items-center gap-2 text-amber-400">
+            <Sparkles size={18} />
+            <span className="f-mono text-xs font-bold uppercase tracking-widest">English Learning Journey</span>
+          </div>
+          <h1 className="f-display mt-4 text-4xl font-semibold leading-tight sm:text-6xl">
+            CEI-Links <span className="text-amber-400 italic">English Club</span>
+          </h1>
+          <p className="f-body mt-2 text-lg text-slate-300 sm:text-xl">Universitas Negeri Malang</p>
+          <p className="f-body mt-6 max-w-2xl text-slate-300">
+            Enam minggu, enam topik, enam pemberhentian tata bahasa. Setiap minggu adalah "tiket keberangkatan"
+            menuju satu tenses baru — lengkap dengan bacaan kontekstual, studi kasus singkat, pretest, dan
+            posttest untuk mengukur perkembanganmu.
+          </p>
+          <div className="mt-8 flex flex-wrap gap-3">
+            <button
+              onClick={onStart}
+              className="flex items-center gap-2 rounded-full bg-amber-400 px-6 py-3 f-body text-sm font-bold text-slate-900 transition hover:bg-amber-300"
+            >
+              Mulai Perjalanan Belajar <ArrowRight size={16} />
+            </button>
+            <button
+              onClick={onLeaderboard}
+              className="flex items-center gap-2 rounded-full border border-slate-600 px-6 py-3 f-body text-sm font-bold text-slate-200 transition hover:bg-slate-800"
+            >
+              <Trophy size={16} /> Lihat Leaderboard
+            </button>
+          </div>
+        </div>
+        <div className="pointer-events-none absolute -right-10 -top-10 h-64 w-64 rounded-full bg-amber-400/10" />
+      </div>
+
+      <div className="mx-auto max-w-5xl px-6 py-14">
+        <h2 className="f-display text-2xl font-semibold text-slate-800">Rute perjalanan 6 minggu</h2>
+        <p className="f-body mt-1 text-sm text-slate-500">
+          Setiap minggu memasangkan satu topik diskusi dengan satu fokus tenses.
+        </p>
+        <div className="mt-6 grid gap-4 sm:grid-cols-2">
+          {WEEKS.map((w) => (
+            <TicketCard key={w.id} className="p-5">
+              <div className="flex items-start justify-between gap-3">
+                <div>
+                  <span className="f-mono text-xs font-bold uppercase tracking-wide text-amber-600">
+                    Week {String(w.id).padStart(2, "0")}
+                  </span>
+                  <h3 className="f-display mt-1 text-lg font-semibold text-slate-800">{w.topic}</h3>
+                  <p className="f-body text-sm text-slate-500">{w.subtopic}</p>
+                </div>
+                <GraduationCap className="mt-1 shrink-0 text-amber-400" size={22} />
+              </div>
+              <div className="mt-3 border-t border-dashed border-amber-200 pt-3">
+                <span className="f-mono text-xs font-semibold text-emerald-700">{w.tenseLabel}</span>
+              </div>
+              <button
+                onClick={() => onDownload(w.id)}
+                className="mt-3 flex w-full items-center justify-center gap-1.5 rounded-full border border-amber-300 bg-amber-50 px-3 py-2 text-xs font-bold text-amber-700 hover:bg-amber-100"
+              >
+                <Download size={13} /> Download Soal (PDF)
+              </button>
+            </TicketCard>
+          ))}
+        </div>
+      </div>
+
+      <div className="border-t border-amber-200 bg-white py-8 text-center f-body text-xs text-slate-400">
+        CEI-Links English Club · Universitas Negeri Malang — silakan sesuaikan teks ini sesuai kebutuhanmu.
+      </div>
+    </div>
+  );
+}
+
+function RegisterScreen({ onRegister, prefill }) {
+  const [nama, setNama] = useState(prefill.nama || "");
+  const [nim, setNim] = useState(prefill.nim || "");
+  const [err, setErr] = useState("");
+  const [loading, setLoading] = useState(false);
+
+  const submit = async (e) => {
+    e.preventDefault();
+    if (!nama.trim() || !nim.trim()) {
+      setErr("Nama dan NIM wajib diisi.");
+      return;
+    }
+    setErr("");
+    setLoading(true);
+    await onRegister(nama.trim(), nim.trim());
+    setLoading(false);
+  };
+
+  return (
+    <div className="f-body flex min-h-screen items-center justify-center bg-slate-900 px-4">
+      <TicketCard className="w-full max-w-md p-8" style={{ background: "#FFFBEB" }}>
+        <div className="flex items-center gap-2 text-amber-600">
+          <Plane size={18} />
+          <span className="f-mono text-xs font-bold uppercase tracking-widest">Boarding Pass</span>
+        </div>
+        <h2 className="f-display mt-2 text-2xl font-semibold text-slate-800">Check-in Peserta</h2>
+        <p className="mt-1 text-sm text-slate-500">Masukkan nama dan NIM untuk memulai atau melanjutkan progres belajarmu.</p>
+        <form onSubmit={submit} className="mt-6 space-y-4">
+          <div>
+            <label className="text-xs font-semibold uppercase tracking-wide text-slate-500">Nama Lengkap</label>
+            <input
+              value={nama}
+              onChange={(e) => setNama(e.target.value)}
+              placeholder="cth. Ahmad Fauzan"
+              className="mt-1 w-full rounded-lg border border-slate-300 bg-white px-3 py-2.5 text-sm outline-none focus:border-amber-400 focus:ring-2 focus:ring-amber-200"
+            />
+          </div>
+          <div>
+            <label className="text-xs font-semibold uppercase tracking-wide text-slate-500">NIM</label>
+            <input
+              value={nim}
+              onChange={(e) => setNim(e.target.value)}
+              placeholder="cth. 220211600001"
+              className="f-mono mt-1 w-full rounded-lg border border-slate-300 bg-white px-3 py-2.5 text-sm outline-none focus:border-amber-400 focus:ring-2 focus:ring-amber-200"
+            />
+          </div>
+          {err && (
+            <div className="flex items-center gap-2 rounded-lg bg-rose-50 px-3 py-2 text-xs font-semibold text-rose-600">
+              <AlertCircle size={14} /> {err}
+            </div>
+          )}
+          <button
+            disabled={loading}
+            className="flex w-full items-center justify-center gap-2 rounded-full bg-slate-900 px-6 py-3 text-sm font-bold text-amber-50 transition hover:bg-slate-800 disabled:opacity-60"
+          >
+            {loading ? "Memuat..." : "Masuk & Mulai"} <ArrowRight size={16} />
+          </button>
+        </form>
+      </TicketCard>
+    </div>
+  );
+}
+
+function MenuScreen({ record, onOpenTest, onDownload }) {
+  return (
+    <div className="mx-auto max-w-5xl px-4 py-8 f-body">
+      <div className="rise-in mb-6">
+        <p className="f-mono text-xs font-bold uppercase tracking-widest text-amber-600">Selamat datang</p>
+        <h1 className="f-display text-2xl font-semibold text-slate-800 sm:text-3xl">{record.nama}</h1>
+        <p className="f-mono text-xs text-slate-400">NIM {record.nim}</p>
+      </div>
+      <div className="grid gap-5 sm:grid-cols-2">
+        {WEEKS.map((w) => {
+          const sc = record.scores[w.id] || { pretest: null, posttest: null };
+          const preDone = !!sc.pretest;
+          const postDone = !!sc.posttest;
+          return (
+            <TicketCard key={w.id} className="rise-in p-5">
+              <div className="flex items-start justify-between gap-3">
+                <div>
+                  <span className="f-mono text-xs font-bold uppercase tracking-wide text-amber-600">
+                    Week {String(w.id).padStart(2, "0")}
+                  </span>
+                  <h3 className="f-display mt-1 text-lg font-semibold text-slate-800">{w.topic}</h3>
+                  <p className="text-sm text-slate-500">{w.subtopic}</p>
+                  <p className="f-mono mt-1 text-xs font-semibold text-emerald-700">{w.tenseLabel}</p>
+                </div>
+              </div>
+
+              <div className="mt-4 flex flex-wrap gap-2">
+                <Stamp label={preDone ? `Pretest ${sc.pretest.percent}%` : "Pretest"} ok={preDone} />
+                <Stamp label={postDone ? `Posttest ${sc.posttest.percent}%` : "Posttest"} ok={postDone} />
+              </div>
+
+              <button
+                onClick={() => onDownload(w.id)}
+                className="mt-3 flex w-full items-center justify-center gap-1.5 rounded-full border border-amber-300 bg-amber-50 px-3 py-2 text-xs font-bold text-amber-700 hover:bg-amber-100"
+              >
+                <Download size={13} /> Download Soal (PDF)
+              </button>
+
+              <div className="mt-4 flex gap-2 border-t border-dashed border-amber-200 pt-4">
+                <button
+                  onClick={() => onOpenTest(w.id, "pretest")}
+                  className="flex flex-1 items-center justify-center gap-1.5 rounded-full bg-slate-900 px-3 py-2 text-xs font-bold text-amber-50 hover:bg-slate-800"
+                >
+                  <BookOpen size={14} /> {preDone ? "Ulangi Pretest" : "Kerjakan Pretest"}
+                </button>
+                <button
+                  onClick={() => preDone && onOpenTest(w.id, "posttest")}
+                  disabled={!preDone}
+                  className={`flex flex-1 items-center justify-center gap-1.5 rounded-full px-3 py-2 text-xs font-bold ${
+                    preDone
+                      ? "bg-amber-400 text-slate-900 hover:bg-amber-300"
+                      : "cursor-not-allowed bg-slate-100 text-slate-400"
+                  }`}
+                >
+                  {preDone ? <Award size={14} /> : <Lock size={14} />}
+                  {postDone ? "Ulangi Posttest" : "Kerjakan Posttest"}
+                </button>
+              </div>
+            </TicketCard>
+          );
+        })}
+      </div>
+    </div>
+  );
+}
+
+function TestScreen({ week, type, onSubmit, onCancel }) {
+  const test = week[type];
+  const [answers, setAnswers] = useState({});
+  const totalQ = TOTAL_Q(test);
+  const answeredCount = Object.keys(answers).length;
+
+  let qCounter = 0;
+
+  const select = (qKey, idx) => setAnswers((a) => ({ ...a, [qKey]: idx }));
+
+  const submit = () => {
+    let correct = 0;
+    let counter = 0;
+    test.passages.forEach((p, pi) => {
+      p.questions.forEach((q, qi) => {
+        const key = `${pi}-${qi}`;
+        if (answers[key] === q.correct) correct++;
+        counter++;
+      });
+    });
+    onSubmit({ correct, total: counter, percent: Math.round((correct / counter) * 100), answers });
+  };
+
+  return (
+    <div className="mx-auto max-w-3xl px-4 py-8 f-body">
+      <button onClick={onCancel} className="mb-4 flex items-center gap-1.5 text-sm font-semibold text-slate-500 hover:text-slate-700">
+        <ArrowLeft size={15} /> Kembali ke menu
+      </button>
+
+      <div className="mb-6 flex items-center justify-between rounded-2xl bg-slate-900 px-5 py-4 text-amber-50">
+        <div>
+          <p className="f-mono text-xs font-bold uppercase tracking-wide text-amber-400">
+            Week {String(week.id).padStart(2, "0")} · {type === "pretest" ? "Pretest" : "Posttest"}
+          </p>
+          <p className="f-display text-lg font-semibold">{week.topic}</p>
+          <p className="text-xs text-slate-400">{week.tenseLabel}</p>
+        </div>
+        <div className="f-mono text-right text-sm font-bold text-amber-400">
+          {answeredCount}/{totalQ}
+          <div className="text-xs font-normal text-slate-400">terjawab</div>
+        </div>
+      </div>
+
+      {test.passages.map((p, pi) => (
+        <div key={pi} className="mb-8">
+          <TicketCard className="p-5" style={{ background: "#FFFBEB" }}>
+            <div className="flex items-center gap-2 text-amber-600">
+              <BookOpen size={16} />
+              <span className="f-mono text-xs font-bold uppercase tracking-wide">Reading {pi + 1}</span>
+            </div>
+            <h3 className="f-display mt-1 text-lg font-semibold text-slate-800">{p.title}</h3>
+            <p className="mt-2 text-sm leading-relaxed text-slate-600">{p.text}</p>
+          </TicketCard>
+
+          <div className="mt-4 space-y-4">
+            {p.questions.map((q, qi) => {
+              qCounter++;
+              const key = `${pi}-${qi}`;
+              return (
+                <div key={key} className="rounded-xl border border-slate-200 bg-white p-4">
+                  <p className="text-sm font-semibold text-slate-800">
+                    <span className="f-mono text-amber-600">{qCounter}.</span> {q.q}
+                  </p>
+                  <div className="mt-3 space-y-2">
+                    {q.options.map((opt, oi) => {
+                      const active = answers[key] === oi;
+                      return (
+                        <button
+                          key={oi}
+                          onClick={() => select(key, oi)}
+                          className={`flex w-full items-center gap-2 rounded-lg border px-3 py-2 text-left text-sm transition ${
+                            active
+                              ? "border-amber-400 bg-amber-50 font-semibold text-slate-800"
+                              : "border-slate-200 text-slate-600 hover:border-slate-300"
+                          }`}
+                        >
+                          <span
+                            className={`flex h-5 w-5 shrink-0 items-center justify-center rounded-full border text-xs font-bold ${
+                              active ? "border-amber-500 bg-amber-400 text-slate-900" : "border-slate-300 text-slate-400"
+                            }`}
+                          >
+                            {String.fromCharCode(65 + oi)}
+                          </span>
+                          {opt}
+                        </button>
+                      );
+                    })}
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+        </div>
+      ))}
+
+      <button
+        onClick={submit}
+        disabled={answeredCount < totalQ}
+        className={`sticky bottom-4 flex w-full items-center justify-center gap-2 rounded-full px-6 py-3.5 text-sm font-bold shadow-lg ${
+          answeredCount < totalQ
+            ? "cursor-not-allowed bg-slate-200 text-slate-400"
+            : "bg-slate-900 text-amber-50 hover:bg-slate-800"
+        }`}
+      >
+        {answeredCount < totalQ ? `Jawab semua soal (${answeredCount}/${totalQ})` : "Kumpulkan Jawaban"}
+        <ArrowRight size={16} />
+      </button>
+    </div>
+  );
+}
+
+function ResultScreen({ result, week, type, onMenu, onDashboard }) {
+  const msg =
+    result.percent >= 85 ? "Luar biasa! Pemahamanmu sangat kuat." :
+    result.percent >= 60 ? "Bagus! Terus asah pemahamanmu." :
+    "Jangan menyerah, ulangi materi dan coba lagi.";
+  return (
+    <div className="mx-auto flex min-h-screen max-w-md flex-col items-center justify-center px-4 py-10 text-center f-body">
+      <div className="stamp-anim flex h-28 w-28 items-center justify-center rounded-full border-4 border-amber-500 bg-amber-50 text-amber-600">
+        <span className="f-display text-3xl font-bold">{result.percent}%</span>
+      </div>
+      <p className="f-mono mt-4 text-xs font-bold uppercase tracking-widest text-amber-600">
+        Week {String(week.id).padStart(2, "0")} · {type === "pretest" ? "Pretest" : "Posttest"} Selesai
+      </p>
+      <h2 className="f-display mt-2 text-2xl font-semibold text-slate-800">
+        {result.correct} dari {result.total} benar
+      </h2>
+      <p className="mt-2 text-sm text-slate-500">{msg}</p>
+      <div className="mt-8 flex w-full gap-3">
+        <button
+          onClick={onMenu}
+          className="flex flex-1 items-center justify-center gap-1.5 rounded-full border border-slate-300 px-4 py-3 text-sm font-bold text-slate-700 hover:bg-slate-50"
+        >
+          <Home size={15} /> Menu
+        </button>
+        <button
+          onClick={onDashboard}
+          className="flex flex-1 items-center justify-center gap-1.5 rounded-full bg-slate-900 px-4 py-3 text-sm font-bold text-amber-50 hover:bg-slate-800"
+        >
+          <BarChart3 size={15} /> Dashboard
+        </button>
+      </div>
+    </div>
+  );
+}
+
+function DashboardScreen({ record }) {
+  const rows = WEEKS.map((w) => {
+    const sc = record.scores[w.id] || {};
+    return {
+      week: `W${w.id}`,
+      topic: w.topic,
+      Pretest: sc.pretest ? sc.pretest.percent : 0,
+      Posttest: sc.posttest ? sc.posttest.percent : 0,
+      preDone: !!sc.pretest,
+      postDone: !!sc.posttest,
+    };
+  });
+  const completed = rows.filter((r) => r.preDone || r.postDone).length;
+  const avgPost = (() => {
+    const done = rows.filter((r) => r.postDone);
+    if (!done.length) return 0;
+    return Math.round(done.reduce((s, r) => s + r.Posttest, 0) / done.length);
+  })();
+
+  return (
+    <div className="mx-auto max-w-5xl px-4 py-8 f-body">
+      <h1 className="f-display text-2xl font-semibold text-slate-800">Dashboard Perkembangan</h1>
+      <p className="text-sm text-slate-500">{record.nama} · <span className="f-mono">{record.nim}</span></p>
+
+      <div className="mt-6 grid grid-cols-2 gap-4 sm:grid-cols-3">
+        <TicketCard className="p-4">
+          <p className="f-mono text-xs font-bold uppercase text-amber-600">Minggu Disentuh</p>
+          <p className="f-display text-2xl font-semibold text-slate-800">{completed}/6</p>
+        </TicketCard>
+        <TicketCard className="p-4">
+          <p className="f-mono text-xs font-bold uppercase text-amber-600">Rata-rata Posttest</p>
+          <p className="f-display text-2xl font-semibold text-slate-800">{avgPost}%</p>
+        </TicketCard>
+        <TicketCard className="p-4 col-span-2 sm:col-span-1">
+          <p className="f-mono text-xs font-bold uppercase text-amber-600">Status</p>
+          <p className="f-display text-lg font-semibold text-slate-800">
+            {completed === 6 ? "Perjalanan Selesai" : "Dalam Perjalanan"}
+          </p>
+        </TicketCard>
+      </div>
+
+      <div className="mt-8 rounded-2xl border border-slate-200 bg-white p-5">
+        <h2 className="f-display text-lg font-semibold text-slate-800">Pretest vs Posttest per Minggu</h2>
+        <div className="mt-4 h-72 w-full">
+          <ResponsiveContainer width="100%" height="100%">
+            <BarChart data={rows} margin={{ top: 5, right: 10, left: -20, bottom: 5 }}>
+              <CartesianGrid strokeDasharray="3 3" stroke="#f1e6c8" />
+              <XAxis dataKey="week" tick={{ fontSize: 12 }} />
+              <YAxis tick={{ fontSize: 12 }} domain={[0, 100]} />
+              <Tooltip />
+              <Legend />
+              <Bar dataKey="Pretest" fill="#94a3b8" radius={[4, 4, 0, 0]} />
+              <Bar dataKey="Posttest" fill="#f59e0b" radius={[4, 4, 0, 0]} />
+            </BarChart>
+          </ResponsiveContainer>
+        </div>
+      </div>
+
+      <div className="mt-6 overflow-hidden rounded-2xl border border-slate-200 bg-white">
+        <table className="w-full text-left text-sm">
+          <thead className="bg-slate-50 text-xs font-bold uppercase tracking-wide text-slate-500">
+            <tr>
+              <th className="px-4 py-3">Minggu</th>
+              <th className="px-4 py-3">Topik</th>
+              <th className="px-4 py-3 text-center">Pretest</th>
+              <th className="px-4 py-3 text-center">Posttest</th>
+              <th className="px-4 py-3 text-center">Peningkatan</th>
+            </tr>
+          </thead>
+          <tbody>
+            {rows.map((r, i) => {
+              const delta = r.preDone && r.postDone ? r.Posttest - r.Pretest : null;
+              return (
+                <tr key={i} className="border-t border-slate-100">
+                  <td className="px-4 py-3 f-mono font-bold text-amber-600">{r.week}</td>
+                  <td className="px-4 py-3 text-slate-700">{r.topic}</td>
+                  <td className="px-4 py-3 text-center">{r.preDone ? `${r.Pretest}%` : "—"}</td>
+                  <td className="px-4 py-3 text-center">{r.postDone ? `${r.Posttest}%` : "—"}</td>
+                  <td className="px-4 py-3 text-center font-semibold">
+                    {delta === null ? "—" : delta > 0 ? `+${delta}%` : `${delta}%`}
+                  </td>
+                </tr>
+              );
+            })}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  );
+}
+
+function LeaderboardScreen({ loading, students }) {
+  const ranked = useMemo(() => {
+    const withStats = students.map((s) => {
+      const percents = [];
+      WEEKS.forEach((w) => {
+        const sc = s.scores?.[w.id];
+        if (sc?.pretest) percents.push(sc.pretest.percent);
+        if (sc?.posttest) percents.push(sc.posttest.percent);
+      });
+      const avg = percents.length ? Math.round(percents.reduce((a, b) => a + b, 0) / percents.length) : 0;
+      return { nama: s.nama, nim: s.nim, avg, completed: percents.length };
+    });
+    return withStats.sort((a, b) => b.avg - a.avg || b.completed - a.completed);
+  }, [students]);
+
+  return (
+    <div className="mx-auto max-w-3xl px-4 py-8 f-body">
+      <div className="flex items-center gap-2 text-amber-600">
+        <Trophy size={20} />
+        <span className="f-mono text-xs font-bold uppercase tracking-widest">Papan Peringkat</span>
+      </div>
+      <h1 className="f-display text-2xl font-semibold text-slate-800">Leaderboard CEI-Links</h1>
+      <p className="text-sm text-slate-500">Diurutkan berdasarkan rata-rata skor dari seluruh tes yang dikerjakan.</p>
+
+      {loading ? (
+        <div className="mt-8 text-sm text-slate-400">Memuat data peserta...</div>
+      ) : ranked.length === 0 ? (
+        <div className="mt-8 rounded-2xl border border-dashed border-slate-300 p-8 text-center text-sm text-slate-400">
+          Belum ada peserta yang mengerjakan tes.
+        </div>
+      ) : (
+        <div className="mt-6 overflow-hidden rounded-2xl border border-slate-200 bg-white">
+          <table className="w-full text-left text-sm">
+            <thead className="bg-slate-50 text-xs font-bold uppercase tracking-wide text-slate-500">
+              <tr>
+                <th className="px-4 py-3">#</th>
+                <th className="px-4 py-3">Nama</th>
+                <th className="px-4 py-3">NIM</th>
+                <th className="px-4 py-3 text-center">Tes Selesai</th>
+                <th className="px-4 py-3 text-center">Rata-rata</th>
+              </tr>
+            </thead>
+            <tbody>
+              {ranked.map((r, i) => (
+                <tr key={r.nim} className="border-t border-slate-100">
+                  <td className="px-4 py-3 f-mono font-bold text-amber-600">
+                    {i === 0 ? "🥇" : i === 1 ? "🥈" : i === 2 ? "🥉" : i + 1}
+                  </td>
+                  <td className="px-4 py-3 font-semibold text-slate-800">{r.nama}</td>
+                  <td className="px-4 py-3 f-mono text-slate-500">{r.nim}</td>
+                  <td className="px-4 py-3 text-center">{r.completed}/12</td>
+                  <td className="px-4 py-3 text-center font-bold text-slate-800">{r.avg}%</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      )}
+      <p className="mt-3 text-center text-xs text-slate-400">Data nama &amp; NIM di leaderboard ini dapat dilihat oleh semua pengguna.</p>
+    </div>
+  );
+}
+
+/* ============================== ADMIN ============================== */
+// Password admin dicek di server Supabase (fungsi admin_students), tidak ada di kode halaman ini.
+const TEST_LABEL = { pretest: "Pretest", posttest: "Posttest" };
+
+function rankStudents(students) {
+  return students
+    .map((s) => {
+      const percents = [];
+      WEEKS.forEach((w) => {
+        const sc = s.scores?.[w.id];
+        if (sc?.pretest) percents.push(sc.pretest.percent);
+        if (sc?.posttest) percents.push(sc.posttest.percent);
+      });
+      const avg = percents.length ? Math.round(percents.reduce((a, b) => a + b, 0) / percents.length) : 0;
+      return { ...s, avg, completed: percents.length };
+    })
+    .sort((a, b) => b.avg - a.avg || b.completed - a.completed);
+}
+
+function buildCsv(students) {
+  const q = (v) => `"${String(v ?? "").replace(/"/g, '""')}"`;
+  const head = ["No", "Nama", "NIM", "Tes Selesai", "Rata-rata (%)"];
+  WEEKS.forEach((w) =>
+    ["pretest", "posttest"].forEach((t) => {
+      head.push(`W${w.id} ${TEST_LABEL[t]} - Skor (%)`, `W${w.id} ${TEST_LABEL[t]} - Selesai pada`);
+      let n = 0;
+      w[t].passages.forEach((p) => p.questions.forEach(() => head.push(`W${w.id} ${TEST_LABEL[t]} - Soal ${++n}`)));
+    })
+  );
+  const rows = rankStudents(students).map((s, i) => {
+    const row = [i + 1, s.nama, s.nim, `${s.completed}/${WEEKS.length * 2}`, s.avg];
+    WEEKS.forEach((w) =>
+      ["pretest", "posttest"].forEach((t) => {
+        const sc = s.scores?.[w.id]?.[t];
+        row.push(sc ? sc.percent : "", sc?.completedAt || "");
+        w[t].passages.forEach((p, pi) =>
+          p.questions.forEach((qq, qi) => {
+            if (!sc) return row.push("");
+            const a = sc.answers?.[`${pi}-${qi}`];
+            row.push(a === undefined ? "Kosong" : a === qq.correct ? "Benar" : "Salah");
+          })
+        );
+      })
+    );
+    return row;
+  });
+  return [head, ...rows].map((r) => r.map(q).join(",")).join("\r\n");
+}
+
+function AdminScreen({ authed, onLogin, onLogout, students, loading, onRefresh }) {
+  const [pw, setPw] = useState("");
+  const [err, setErr] = useState("");
+  const [msg, setMsg] = useState("");
+  const [busy, setBusy] = useState(false);
+  const ranked = useMemo(() => rankStudents(students), [students]);
+
+  const tryLogin = async () => {
+    setBusy(true);
+    const ok = await onLogin(pw);
+    setBusy(false);
+    if (ok) { setErr(""); setPw(""); } else setErr("Password salah atau server tidak terjangkau.");
+  };
+
+  const downloadCsv = () => {
+    try {
+      const blob = new Blob(["\ufeff" + buildCsv(students)], { type: "text/csv;charset=utf-8" });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = `rekap-cei-links-${new Date().toISOString().slice(0, 10)}.csv`;
+      document.body.appendChild(a);
+      a.click();
+      a.remove();
+      setTimeout(() => URL.revokeObjectURL(url), 1000);
+      setMsg("Rekap diunduh. Jika file tidak muncul, gunakan tombol Salin CSV lalu tempel ke Excel/Sheets.");
+    } catch (e) {
+      setMsg("Download diblokir browser. Gunakan tombol Salin CSV.");
+    }
+  };
+
+  const copyCsv = async () => {
+    try {
+      await navigator.clipboard.writeText(buildCsv(students));
+      setMsg("CSV tersalin. Tempel di Excel/Google Sheets (Ctrl+V).");
+    } catch (e) {
+      setMsg("Gagal menyalin otomatis.");
+    }
+  };
+
+  if (!authed) {
+    return (
+      <div className="mx-auto max-w-sm px-4 py-16 f-body">
+        <TicketCard className="p-6">
+          <div className="flex items-center gap-2 text-amber-600">
+            <ShieldCheck size={18} />
+            <span className="f-mono text-xs font-bold uppercase tracking-widest">Area Admin</span>
+          </div>
+          <h1 className="f-display mt-1 text-2xl font-semibold text-slate-800">Masuk Admin</h1>
+          <input
+            type="password"
+            value={pw}
+            onChange={(e) => setPw(e.target.value)}
+            onKeyDown={(e) => e.key === "Enter" && tryLogin()}
+            placeholder="Password admin"
+            className="mt-4 w-full rounded-xl border border-slate-300 px-4 py-3 text-sm outline-none focus:border-amber-400"
+          />
+          {err && <p className="mt-2 flex items-center gap-1 text-xs font-semibold text-rose-600"><AlertCircle size={13} /> {err}</p>}
+          <button onClick={tryLogin} className="mt-4 w-full rounded-full bg-slate-900 px-6 py-3 text-sm font-bold text-amber-50 hover:bg-slate-800">
+            {busy ? "Memeriksa..." : "Masuk"}
+          </button>
+        </TicketCard>
+      </div>
+    );
+  }
+
+  const cell = (sc) => (sc ? <span className="font-semibold text-slate-800">{sc.percent}%</span> : <span className="text-slate-300">–</span>);
+
+  return (
+    <div className="mx-auto max-w-5xl px-4 py-8 f-body">
+      <div className="flex flex-wrap items-end justify-between gap-3">
+        <div>
+          <div className="flex items-center gap-2 text-amber-600">
+            <ShieldCheck size={18} />
+            <span className="f-mono text-xs font-bold uppercase tracking-widest">Area Admin</span>
+          </div>
+          <h1 className="f-display text-2xl font-semibold text-slate-800">Rekap Peserta</h1>
+          <p className="text-sm text-slate-500">{ranked.length} peserta terdaftar. Data diambil langsung dari penyimpanan bersama.</p>
+        </div>
+        <div className="flex flex-wrap gap-2">
+          <button onClick={downloadCsv} disabled={!ranked.length} className="flex items-center gap-1.5 rounded-full bg-amber-400 px-4 py-2 text-sm font-bold text-slate-900 hover:bg-amber-300 disabled:opacity-40">
+            <Download size={15} /> Download Rekap (CSV)
+          </button>
+          <button onClick={copyCsv} disabled={!ranked.length} className="flex items-center gap-1.5 rounded-full border border-slate-300 px-4 py-2 text-sm font-semibold text-slate-700 hover:bg-white disabled:opacity-40">
+            <Copy size={15} /> Salin CSV
+          </button>
+          <button onClick={onRefresh} className="flex items-center gap-1.5 rounded-full border border-slate-300 px-4 py-2 text-sm font-semibold text-slate-700 hover:bg-white">
+            <RefreshCw size={15} /> Refresh
+          </button>
+          <button onClick={onLogout} className="flex items-center gap-1.5 rounded-full border border-slate-300 px-4 py-2 text-sm font-semibold text-slate-700 hover:bg-white">
+            <LogOut size={15} /> Keluar Admin
+          </button>
+        </div>
+      </div>
+      {msg && <p className="mt-3 text-xs font-semibold text-emerald-700">{msg}</p>}
+
+      {loading ? (
+        <div className="mt-8 text-sm text-slate-400">Memuat data peserta...</div>
+      ) : ranked.length === 0 ? (
+        <div className="mt-8 rounded-2xl border border-dashed border-slate-300 p-8 text-center text-sm text-slate-400">Belum ada peserta yang mengerjakan tes.</div>
+      ) : (
+        <div className="mt-6 overflow-x-auto rounded-2xl border border-slate-200 bg-white">
+          <table className="w-full text-left text-xs">
+            <thead className="bg-slate-50 font-bold uppercase tracking-wide text-slate-500">
+              <tr>
+                <th className="px-3 py-3">#</th>
+                <th className="px-3 py-3">Nama</th>
+                <th className="px-3 py-3">NIM</th>
+                <th className="px-3 py-3 text-center">Selesai</th>
+                <th className="px-3 py-3 text-center">Rata-rata</th>
+                {WEEKS.map((w) => (
+                  <th key={w.id} className="whitespace-nowrap px-3 py-3 text-center">W{w.id} Pre / Post</th>
+                ))}
+              </tr>
+            </thead>
+            <tbody>
+              {ranked.map((s, i) => (
+                <tr key={s.nim} className="border-t border-slate-100">
+                  <td className="px-3 py-3 f-mono font-bold text-amber-600">{i + 1}</td>
+                  <td className="whitespace-nowrap px-3 py-3 font-semibold text-slate-800">{s.nama}</td>
+                  <td className="px-3 py-3 f-mono text-slate-500">{s.nim}</td>
+                  <td className="px-3 py-3 text-center">{s.completed}/{WEEKS.length * 2}</td>
+                  <td className="px-3 py-3 text-center font-bold text-slate-800">{s.avg}%</td>
+                  {WEEKS.map((w) => (
+                    <td key={w.id} className="whitespace-nowrap px-3 py-3 text-center">
+                      {cell(s.scores?.[w.id]?.pretest)} <span className="text-slate-300">/</span> {cell(s.scores?.[w.id]?.posttest)}
+                    </td>
+                  ))}
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      )}
+      <p className="mt-3 text-xs text-slate-400">File CSV memuat skor tiap tes plus status Benar / Salah / Kosong untuk setiap soal.</p>
+    </div>
+  );
+}
+
+/* ============================== MAIN APP ============================== */
+function App() {
+  const [view, setView] = useState("landing");
+  const [student, setStudent] = useState(null);
+  const [record, setRecord] = useState(null);
+  const [prefill, setPrefill] = useState({ nama: "", nim: "" });
+  const [activeWeekId, setActiveWeekId] = useState(null);
+  const [activeType, setActiveType] = useState(null);
+  const [lastResult, setLastResult] = useState(null);
+  const [students, setStudents] = useState([]);
+  const [lbLoading, setLbLoading] = useState(false);
+  const [printWeekId, setPrintWeekId] = useState(null);
+  const [adminOk, setAdminOk] = useState(false);
+  const [adminPw, setAdminPw] = useState("");
+
+  useEffect(() => {
+    const handleAfterPrint = () => setPrintWeekId(null);
+    window.addEventListener("afterprint", handleAfterPrint);
+    return () => window.removeEventListener("afterprint", handleAfterPrint);
+  }, []);
+
+  const handleDownload = (weekId) => {
+    setPrintWeekId(weekId);
+    setTimeout(() => {
+      window.print();
+    }, 150);
+  };
+
+  // prefill from personal (non-shared) storage for convenience
+  useEffect(() => {
+    (async () => {
+      try {
+        const raw = localStorage.getItem("cei_last_session");
+        if (raw) setPrefill(JSON.parse(raw));
+      } catch (e) {
+        /* no previous session */
+      }
+    })();
+  }, []);
+
+  const goRegister = () => setView("register");
+
+  const handleRegister = async (nama, nim) => {
+    let rec;
+    try {
+      rec = await rpc("register_student", { p_nim: sanitizeNim(nim), p_nama: nama });
+    } catch (e) {
+      alert("Gagal terhubung ke server: " + e.message);
+      return;
+    }
+    rec.scores = { ...emptyScores(), ...(rec.scores || {}) };
+    try { localStorage.setItem("cei_last_session", JSON.stringify({ nama, nim })); } catch (e) {}
+    setStudent({ nama, nim: rec.nim });
+    setRecord(rec);
+    setView("menu");
+  };
+
+  const handleLogout = () => {
+    setStudent(null);
+    setRecord(null);
+    setView("landing");
+  };
+
+  const openTest = (weekId, type) => {
+    setActiveWeekId(weekId);
+    setActiveType(type);
+    setView("test");
+  };
+
+  const submitTest = async (result) => {
+    const updated = {
+      ...record,
+      scores: {
+        ...record.scores,
+        [activeWeekId]: {
+          ...record.scores[activeWeekId],
+          [activeType]: { ...result, completedAt: new Date().toISOString() },
+        },
+      },
+    };
+    setRecord(updated);
+    setLastResult(result);
+    try {
+      await rpc("save_score", { p_nim: record.nim, p_week: activeWeekId, p_type: activeType, p_result: updated.scores[activeWeekId][activeType] });
+    } catch (e) {
+      alert("⚠️ Hasil tes belum tersimpan ke server (" + e.message + "). Coba kumpulkan lagi atau hubungi admin.");
+    }
+    setView("result");
+  };
+
+  const loadLeaderboard = async () => {
+    setLbLoading(true);
+    const all = await fetchAllStudents();
+    setStudents(all);
+    setLbLoading(false);
+  };
+
+  const loadAdmin = async (pw = adminPw) => {
+    setLbLoading(true);
+    try {
+      setStudents((await rpc("admin_students", { pw })) || []);
+      setLbLoading(false);
+      return true;
+    } catch (e) {
+      setLbLoading(false);
+      return false;
+    }
+  };
+
+  const adminLogin = async (pw) => {
+    const ok = await loadAdmin(pw);
+    if (ok) { setAdminPw(pw); setAdminOk(true); }
+    return ok;
+  };
+
+  useEffect(() => {
+    if (view === "leaderboard") loadLeaderboard();
+    if (view === "admin" && adminOk) loadAdmin();
+  }, [view]);
+
+  if (view === "landing") {
+    return (
+      <>
+        <FontStyles />
+        <LandingScreen onStart={goRegister} onLeaderboard={() => setView("leaderboard")} onDownload={handleDownload} />
+        <PrintableWeek week={WEEKS.find((w) => w.id === printWeekId)} />
+        <button
+          onClick={() => setView("admin")}
+          className="fixed bottom-4 right-4 flex items-center gap-1.5 rounded-full border border-slate-300 bg-white/90 px-3 py-1.5 text-xs font-semibold text-slate-500 shadow-sm hover:bg-white"
+        >
+          <ShieldCheck size={13} /> Admin
+        </button>
+      </>
+    );
+  }
+
+  if (view === "register") {
+    return (
+      <>
+        <FontStyles />
+        <RegisterScreen onRegister={handleRegister} prefill={prefill} />
+      </>
+    );
+  }
+
+  const activeWeek = WEEKS.find((w) => w.id === activeWeekId);
+
+  return (
+    <div className="min-h-screen bg-amber-50">
+      <FontStyles />
+      <NavBar view={view} setView={setView} student={student} onLogout={handleLogout} />
+      {view === "menu" && (record ? (
+        <MenuScreen record={record} onOpenTest={openTest} onDownload={handleDownload} />
+      ) : (
+        <div className="mx-auto max-w-md px-4 py-20 text-center f-body">
+          <p className="text-sm text-slate-500">Silakan check-in dengan nama dan NIM terlebih dahulu.</p>
+          <button
+            onClick={() => setView("register")}
+            className="mt-4 rounded-full bg-slate-900 px-6 py-3 text-sm font-bold text-amber-50 hover:bg-slate-800"
+          >
+            Check-in Sekarang
+          </button>
+        </div>
+      ))}
+      {view === "test" && activeWeek && (
+        <TestScreen week={activeWeek} type={activeType} onSubmit={submitTest} onCancel={() => setView("menu")} />
+      )}
+      {view === "result" && activeWeek && lastResult && (
+        <ResultScreen
+          result={lastResult}
+          week={activeWeek}
+          type={activeType}
+          onMenu={() => setView("menu")}
+          onDashboard={() => setView("dashboard")}
+        />
+      )}
+      {view === "dashboard" && (record ? (
+        <DashboardScreen record={record} />
+      ) : (
+        <div className="mx-auto max-w-md px-4 py-20 text-center f-body">
+          <p className="text-sm text-slate-500">Silakan check-in dengan nama dan NIM terlebih dahulu untuk melihat dashboard.</p>
+          <button
+            onClick={() => setView("register")}
+            className="mt-4 rounded-full bg-slate-900 px-6 py-3 text-sm font-bold text-amber-50 hover:bg-slate-800"
+          >
+            Check-in Sekarang
+          </button>
+        </div>
+      ))}
+      {view === "leaderboard" && <LeaderboardScreen loading={lbLoading} students={students} />}
+      {view === "admin" && (
+        <AdminScreen
+          authed={adminOk}
+          onLogin={adminLogin}
+          onLogout={() => { setAdminOk(false); setAdminPw(""); setStudents([]); setView(student ? "menu" : "landing"); }}
+          students={students}
+          loading={lbLoading}
+          onRefresh={() => loadAdmin()}
+        />
+      )}
+      <PrintableWeek week={WEEKS.find((w) => w.id === printWeekId)} />
+    </div>
+  );
+}
+
+ReactDOM.createRoot(document.getElementById("root")).render(<App />);
+</script></body></html>
